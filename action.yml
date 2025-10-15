@@ -2,12 +2,25 @@ name: "P6 GHA: PR Title Linter"
 description: "P6 GHA: PR Title Linter"
 author: "Philip M. Gollucci"
 
+inputs:
+  gh_token:
+    description: "GitHub token"
+    required: false
+
 runs:
   using: "composite"
   steps:
-    - uses: amannn/action-semantic-pull-request@v6.1.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Set default GH token
+      shell: bash
+      run: |
+        GH_TOKEN="${{ inputs.gh_token }}"
+        if [ -z "$GH_TOKEN" ]; then
+          GH_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+        fi
+        echo "GH_TOKEN=$GH_TOKEN" >> "$GITHUB_ENV"
+
+    - name: Lint PR Title
+      uses: amannn/action-semantic-pull-request@v6.1.1
       with:
         types: |-
           chore
