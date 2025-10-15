@@ -3,7 +3,7 @@ description: "P6 GHA: PR Title Linter"
 author: "Philip M. Gollucci"
 
 inputs:
-  github-token:
+  gh_token:
     description: "GitHub token"
     required: false
 
