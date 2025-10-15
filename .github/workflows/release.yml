@@ -10,12 +10,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
+      contents: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5.0.0
-        with:
-          fetch-depth: 0
       - name: Release
         uses: p6m7g8-actions/p6-gh-release@main
         with:
