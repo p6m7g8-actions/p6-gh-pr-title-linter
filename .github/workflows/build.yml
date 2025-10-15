@@ -9,4 +9,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build
-        use: p6m7g8-actions/p6-build@main
+        uses: p6m7g8-actions/p6-build@main
