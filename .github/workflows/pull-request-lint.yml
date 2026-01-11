@@ -18,7 +18,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+        uses: p6m7g8-actions/checkout@main
       - name: Lint PR title
         uses: ./
         with:
