@@ -21,4 +21,5 @@ runs:
           feat
           fix
           merge queue
+          major
         requireScope: false
