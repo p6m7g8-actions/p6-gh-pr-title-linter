@@ -16,10 +16,21 @@ runs:
         GITHUB_TOKEN: ${{ inputs.gh_token }}
       with:
         types: |-
+          build
           chore
           ci
+          docs
           feat
           fix
+          perf
+          refactor
+          revert
+          style
+          test
+          release
+          deps
+          security
+          hotfix
           merge queue
           major
         requireScope: false
