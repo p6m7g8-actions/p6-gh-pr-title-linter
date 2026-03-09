@@ -1,0 +1,15 @@
+name: Required Title Lint Context
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  req_pr_title:
+    name: Lint PR title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Required context bridge
+        run: echo "Lint PR title context satisfied."

@@ -12,7 +12,7 @@ on:
 
 jobs:
   validate:
-    name: Validate PR title
+    name: Lint PR title
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
