@@ -3,6 +3,9 @@ name: Build
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, edited]
+  push:
+    branches:
+      - gh-readonly-queue/**
   merge_group:
     types: [checks_requested]
   workflow_dispatch: {}
@@ -31,9 +34,9 @@ jobs:
     permissions:
       pull-requests: read
     steps:
-      - name: Skip PR title lint in merge queue context
-        if: github.event_name == 'merge_group'
-        run: echo "No PR title in merge_group event; marking check successful."
+      - name: Skip PR title lint in queue context
+        if: github.event_name == 'merge_group' || github.event_name == 'push'
+        run: echo "No PR title on a queue ref; marking check successful."
       - name: Lint PR title
         if: github.event_name == 'pull_request'
         uses: p6m7g8-actions/p6-gh-pr-title-linter@main
