@@ -10,27 +10,44 @@ inputs:
 runs:
   using: "composite"
   steps:
+    # The accepted types are reconciled with the bump rules in
+    # p6m7g8-actions/p6-gh-release. That action releases on: a BREAKING CHANGE
+    # footer, a `!` marker on any type, or `major:` (major); `feat:` (minor);
+    # `fix:` (patch); `chore:` other than `chore(release):` (patch). Everything
+    # else produces no bump and therefore no release, silently.
+    #
+    # A type is only listed here if one of the following is true:
+    #
+    #   1. it releases: chore, feat, fix, major
+    #   2. it describes work that genuinely should not ship a new tag, and it is
+    #      in real use across the fleet: ci, docs, refactor, style, test
+    #
+    # Types that produced no release when they clearly should have (perf,
+    # revert, security, hotfix) were removed rather than documented, because a
+    # `security:` CVE patch that ships no tag is the defect in its most
+    # dangerous form. So were types that were redundant or not even valid
+    # conventional-commit syntax (build, release, deps, merge queue). All eight
+    # had zero occurrences across p6m7g8-actions, p6m7g8, p6m7g8-dotfiles and
+    # p6m7g8-automation, so nothing in flight relies on them. Authors reach for
+    # fix (patch), feat (minor) or a `!` marker (major) instead, all of which
+    # release. Dependency work is already spelled `chore(deps):` fleet-wide,
+    # which bumps patch.
+    #
+    # Keep this list and the p6-gh-release bump rules in sync. The release
+    # logic is the anchored side; change this list first.
     - name: Lint PR Title
       uses: amannn/action-semantic-pull-request@v6.1.1
       env:
         GITHUB_TOKEN: ${{ inputs.gh_token }}
       with:
         types: |-
-          build
           chore
           ci
           docs
           feat
           fix
-          perf
+          major
           refactor
-          revert
           style
           test
-          release
-          deps
-          security
-          hotfix
-          merge queue
-          major
         requireScope: false
