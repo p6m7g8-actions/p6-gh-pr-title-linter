@@ -3,6 +3,12 @@ name: Build
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, edited]
+  # The merge queue needs `build` and `Lint PR title` to report on the queue
+  # ref, and merge_group is not dispatching (last such event org-wide was
+  # 2026-03-09). `claude-review` and `pull-request-lint` use the same trigger,
+  # but note the difference: they no-op on queue refs, whereas this workflow
+  # deliberately runs the FULL build there. Building the merged result is the
+  # entire point of a merge queue, so this one must not be stubbed out.
   push:
     branches:
       - gh-readonly-queue/**
@@ -15,15 +21,15 @@ permissions:
   pull-requests: read
 
 concurrency:
-  # github.event_name is part of the key because for a merge_group event
-  # github.ref IS the refs/heads/gh-readonly-queue/... ref, and
-  # github.event.pull_request.number is empty for both merge_group and the
-  # queue-ref push above. Without it, the two runs for one queue entry share a
-  # group and cancel-in-progress cancels one of them; a cancelled required
-  # check reads as a failure to the queue, which is the dequeue this rider
-  # exists to prevent.
+  # event_name is part of the key on purpose. A `push` to a gh-readonly-queue
+  # ref and a `merge_group` on that same ref both leave
+  # `github.event.pull_request.number` empty and both resolve `github.ref` to
+  # the queue ref, so without it the two share a group and cancel-in-progress
+  # cancels one of them. A cancelled required check dequeues the PR.
   group: build-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Only PR runs are cancellable. A cancelled required check dequeues the PR,
+  # so a queue-ref build must never be superseded by anything.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -41,9 +47,9 @@ jobs:
     permissions:
       pull-requests: read
     steps:
-      - name: Skip PR title lint in queue context
-        if: github.event_name == 'merge_group' || github.event_name == 'push'
-        run: echo "No PR title on a queue ref; marking check successful."
+      - name: Skip PR title lint in merge queue context
+        if: github.event_name == 'merge_group'
+        run: echo "No PR title in merge_group event; marking check successful."
       - name: Lint PR title
         if: github.event_name == 'pull_request'
         uses: p6m7g8-actions/p6-gh-pr-title-linter@main
