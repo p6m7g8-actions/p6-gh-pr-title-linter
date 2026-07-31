@@ -10,7 +10,7 @@
 
 ```yaml
       - name: Lint PR Title
-        uses: p6m7g8-actions/p6-gh-pr-title-linter@main
+        uses: p6m7g8-actions/p6-gh-pr-title-lint@main
         with:
           gh_token: ${{ secrets.GITHUB_TOKEN }}
 ```
